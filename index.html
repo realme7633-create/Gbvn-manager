@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123b82">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>GBVN Smart Manager Pro</title>
+<style>
+:root{--blue:#123b82;--blue2:#2563eb;--green:#07845b;--red:#c62828;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--bg:#f1f5f9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif;color:var(--ink)}
+header{background:var(--blue);color:white;padding:14px 16px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0002}
+.head{max-width:1200px;margin:auto;display:flex;justify-content:space-between;gap:12px;align-items:center}.head h1{font-size:18px;margin:0}.head small{color:#dbeafe}
+.wrap{max-width:1200px;margin:auto;display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 64px)}
+nav{background:white;border-right:1px solid var(--line);padding:10px;display:flex;flex-direction:column;gap:5px}
+nav button{border:0;background:white;text-align:left;padding:12px;border-radius:9px;font-weight:650;color:#334155;cursor:pointer}
+nav button.active{background:var(--blue);color:white}main{padding:18px;min-width:0}
+section.page{display:none}section.page.active{display:block}
+h2{font-size:21px;margin:0 0 14px}.muted{color:var(--muted);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:0 1px 3px #00000008}
+.card small{color:var(--muted);font-weight:650}.card strong{display:block;font-size:24px;margin-top:5px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0}.row>*{flex:1}
+input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:white;font:inherit;font-size:14px;min-width:0}
+button{font:inherit}.btn{border:0;border-radius:8px;padding:10px 13px;color:white;background:var(--blue2);font-weight:700;cursor:pointer}
+.btn.green{background:var(--green)}.btn.red{background:var(--red)}.btn.gray{background:#475569}.btn.light{background:#e2e8f0;color:#1e293b}
+.btn.small{padding:7px 9px;font-size:12px}.tablebox{overflow:auto;background:white;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:700px;font-size:13px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{background:#f8fafc;color:#475569}
+.badge{padding:4px 8px;border-radius:20px;font-size:11px;font-weight:750;background:#fee2e2;color:#991b1b}.badge.ok{background:#dcfce7;color:#166534}.badge.warn{background:#fef3c7;color:#92400e}
+.modal{display:none;position:fixed;inset:0;background:#0f172acc;z-index:10;align-items:center;justify-content:center;padding:12px}.modal.show{display:flex}
+.dialog{background:white;width:min(520px,100%);max-height:92vh;overflow:auto;border-radius:14px;padding:18px}.dialog h3{margin:0 0 12px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:12px;font-weight:700;margin:0 0 4px;color:#475569}
+.field.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.notice{padding:11px;border-radius:9px;background:#eff6ff;color:#1e40af;font-size:13px;margin:10px 0}
+#billArea{background:white;color:#111827;padding:22px;border:1px solid #94a3b8;border-radius:8px}
+#billArea h2{text-align:center;margin:0;color:#123b82}#billArea .center{text-align:center}
+.billtable{min-width:0;margin-top:15px}.billtable td,.billtable th{border:1px solid #cbd5e1}
+.hidden{display:none!important}
+@media(max-width:800px){.wrap{display:block}nav{display:grid;grid-template-columns:repeat(4,1fr);border-right:0;border-bottom:1px solid var(--line);position:sticky;top:62px;z-index:4}nav button{text-align:center;padding:9px 4px;font-size:11px}main{padding:12px}.cards{grid-template-columns:repeat(2,1fr)}.head h1{font-size:15px}.head small{font-size:10px}}
+@media(max-width:420px){.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.cards{gap:8px}.card{padding:11px}.card strong{font-size:20px}}
+@media print{body *{visibility:hidden!important}#billArea,#billArea *{visibility:visible!important}#billArea{position:absolute;left:0;top:0;width:100%;border:0;padding:10px}.no-print{display:none!important}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><h1 id="headName">ग्रामीण बाल विद्या निकेतन</h1><small>GBVN SMART MANAGER PRO • मोबाइल मैनेजर</small></div><small>संचालक: <b id="headAdmin">मधुकर</b></small></div></header>
+<div class="wrap">
+<nav>
+<button class="active" data-page="dashboard">📊 डैशबोर्ड</button>
+<button data-page="students">👨‍🎓 छात्र</button>
+<button data-page="fees">💰 फीस</button>
+<button data-page="attendance">📋 उपस्थिति</button>
+<button data-page="batches">📚 बैच</button>
+<button data-page="expenses">🧾 खर्च</button>
+<button data-page="reports">📈 रिपोर्ट</button>
+<button data-page="settings">⚙️ सेटिंग / बैकअप</button>
+</nav>
+<main>
+<section id="dashboard" class="page active">
+<h2>नमस्ते, <span id="greetName">मधुकर</span> जी! 👋</h2><div class="muted">कोचिंग सेंटर का आज का सारांश</div>
+<div class="cards">
+<div class="card"><small>कुल विद्यार्थी</small><strong id="dStudents">0</strong></div>
+<div class="card"><small>इस माह फीस जमा</small><strong id="dCollected">₹0</strong></div>
+<div class="card"><small>कुल बकाया फीस</small><strong id="dPending">₹0</strong></div>
+<div class="card"><small>इस माह खर्च</small><strong id="dExpense">₹0</strong></div>
+</div>
+<div class="cards">
+<div class="card"><small>आज उपस्थित</small><strong id="dPresent">0</strong></div>
+<div class="card"><small>आज अनुपस्थित</small><strong id="dAbsent">0</strong></div>
+<div class="card"><small>इस माह शुद्ध आय</small><strong id="dProfit">₹0</strong></div>
+<div class="card"><small>सक्रिय बैच</small><strong id="dBatches">0</strong></div>
+</div>
+<div class="panel"><b>महत्वपूर्ण सूचना</b><p class="muted">डेटा इसी मोबाइल/ब्राउज़र में सेव होता है। मोबाइल बदलने या ब्राउज़र डेटा साफ करने से पहले JSON बैकअप डाउनलोड अवश्य करें।</p></div>
+</section>
+
+<section id="students" class="page">
+<div class="row"><h2 style="flex:2">छात्र प्रबंधन</h2><button class="btn" onclick="studentForm()">＋ नया छात्र</button></div>
+<div class="row"><input id="studentSearch" placeholder="नाम / पिता / मोबाइल खोजें" oninput="renderStudents()"><select id="studentBatchFilter" onchange="renderStudents()"><option value="">सभी बैच</option></select></div>
+<div class="tablebox"><table><thead><tr><th>नाम</th><th>पिता</th><th>बैच</th><th>मोबाइल</th><th>फीस</th><th>स्थिति</th><th>कार्य</th></tr></thead><tbody id="studentRows"></tbody></table></div>
+</section>
+
+<section id="fees" class="page">
+<div class="row"><h2 style="flex:2">फीस प्रबंधन</h2><button class="btn green" onclick="paymentForm()">＋ फीस जमा करें</button></div>
+<div class="row"><input type="month" id="feeMonth" onchange="renderFees()"><select id="feeBatchFilter" onchange="renderFees()"><option value="">सभी बैच</option></select><input id="feeSearch" placeholder="छात्र खोजें" oninput="renderFees()"></div>
+<div class="cards">
+<div class="card"><small>चुने महीने की कुल डिमांड</small><strong id="fDemand">₹0</strong></div>
+<div class="card"><small>चुने महीने में जमा</small><strong id="fPaid">₹0</strong></div>
+<div class="card"><small>शेष बकाया</small><strong id="fDue">₹0</strong></div>
+<div class="card"><small>भुगतान करने वाले</small><strong id="fCount">0</strong></div>
+</div>
+<div class="tablebox"><table><thead><tr><th>छात्र</th><th>बैच</th><th>मासिक फीस</th><th>पुराना बकाया</th><th>कुल डिमांड</th><th>इस माह जमा</th><th>शेष</th><th>स्थिति</th><th>बिल</th></tr></thead><tbody id="feeRows"></tbody></table></div>
+<div class="notice">एक ही महीने में कई बार आंशिक फीस जमा कर सकते हैं। हर भुगतान अलग रसीद के रूप में सुरक्षित होगा।</div>
+</section>
+
+<section id="attendance" class="page">
+<h2>दैनिक उपस्थिति</h2>
+<div class="row"><input type="date" id="attDate" onchange="renderAttendance()"><select id="attBatch" onchange="renderAttendance()"><option value="">सभी बैच</option></select></div>
+<div class="row"><button class="btn green" onclick="markAll('P')">सभी उपस्थित</button><button class="btn red" onclick="markAll('A')">सभी अनुपस्थित</button></div>
+<div class="panel" id="attendanceRows"></div>
+</section>
+
+<section id="batches" class="page">
+<div class="row"><h2 style="flex:2">बैच प्रबंधन</h2><button class="btn" onclick="batchForm()">＋ नया बैच</button></div>
+<div class="tablebox"><table><thead><tr><th>बैच का नाम</th><th>डिफॉल्ट फीस</th><th>सक्रिय छात्र</th><th>कार्य</th></tr></thead><tbody id="batchRows"></tbody></table></div>
+</section>
+
+<section id="expenses" class="page">
+<div class="row"><h2 style="flex:2">खर्च प्रबंधन</h2><button class="btn red" onclick="expenseForm()">＋ खर्च दर्ज करें</button></div>
+<div class="row"><input type="month" id="expenseMonth" onchange="renderExpenses()"></div>
+<div class="tablebox"><table><thead><tr><th>तारीख</th><th>विवरण</th><th>श्रेणी</th><th>राशि</th><th>कार्य</th></tr></thead><tbody id="expenseRows"></tbody></table></div>
+</section>
+
+<section id="reports" class="page">
+<h2>रिपोर्ट एवं हिसाब</h2>
+<div class="row"><button class="btn" onclick="pendingReport()">बकाया फीस रिपोर्ट</button><button class="btn green" onclick="collectionReport()">मासिक कलेक्शन रिपोर्ट</button><button class="btn gray" onclick="profitReport()">आय-व्यय रिपोर्ट</button></div>
+<div class="panel hidden" id="reportPanel"><div class="row no-print"><b id="reportTitle" style="flex:2">रिपोर्ट</b><button class="btn small" onclick="window.print()">प्रिंट / PDF</button></div><div id="reportContent"></div></div>
+</section>
+
+<section id="settings" class="page">
+<h2>सेटिंग्स एवं बैकअप</h2>
+<div class="panel">
+<div class="formgrid">
+<div class="field"><label>संस्थान का नाम</label><input id="setName"></div>
+<div class="field"><label>संचालक का नाम</label><input id="setAdmin"></div>
+<div class="field"><label>पता</label><input id="setAddress"></div>
+<div class="field"><label>मोबाइल नंबर</label><input id="setPhone"></div>
+</div><div class="actions"><button class="btn" onclick="saveSettings()">सेटिंग सेव करें</button></div>
+</div>
+<div class="panel" style="margin-top:12px"><b>डेटा बैकअप</b><p class="muted">बैकअप में छात्र, बैच, फीस भुगतान, उपस्थिति, खर्च और सेटिंग शामिल हैं।</p>
+<div class="row"><button class="btn green" onclick="backup()">⬇ JSON बैकअप डाउनलोड</button><label class="btn gray" style="text-align:center">⬆ बैकअप रीस्टोर<input type="file" accept=".json,application/json" id="restoreFile" onchange="restore(event)" hidden></label></div>
+<button class="btn red" onclick="clearAll()">सारा डेटा हटाएँ</button>
+</div>
+</section>
+</main></div>
+
+<div class="modal" id="modal"><div class="dialog"><h3 id="modalTitle">विवरण</h3><div id="modalBody"></div><div class="actions"><button class="btn light" onclick="closeModal()">रद्द करें</button><button class="btn" id="modalSave">सेव करें</button></div></div></div>
+<div class="modal" id="billModal"><div class="dialog"><div class="no-print row"><b style="flex:2">बिल / रसीद</b><button class="btn light small" onclick="closeBill()">✕</button></div><div id="billArea"></div><div class="actions no-print"><button class="btn green" onclick="shareBill()">WhatsApp शेयर</button><button class="btn" onclick="window.print()">प्रिंट / PDF</button></div></div></div>
+
+<script>
+const KEY='gbvn_smart_manager_v5';
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toLocaleDateString('en-CA');
+const monthNow=()=>today().slice(0,7);
+const money=n=>'₹'+Math.round(Number(n)||0).toLocaleString('en-IN');
+const monthDiff=(a,b)=>{if(!a||!b)return 0;let x=a.split('-').map(Number),y=b.split('-').map(Number);return (y[0]-x[0])*12+y[1]-x[1]};
+let db={students:[],batches:[],payments:[],attendance:[],expenses:[],settings:{name:'ग्रामीण बाल विद्या निकेतन',admin:'मधुकर',address:'Bankatti & Hathra, Bihar',phone:''}};
+let currentBill=null;
+function loadDB(){try{let d=JSON.parse(localStorage.getItem(KEY)||'null');if(d)db={...db,...d,settings:{...db.settings,...d.settings}}}catch(e){alert('पुराना डेटा पढ़ने में समस्या हुई। बैकअप उपलब्ध हो तो रीस्टोर करें।')}
+if(!db.batches.length)db.batches=[
+{name:'Kids Batch – Bankatti',fee:200},{name:'Junior Batch – Bankatti',fee:200},{name:'Junior Batch – Hathra',fee:300},{name:'Kids Batch – Hathra',fee:300}];
+}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function id(){return Date.now()+Math.floor(Math.random()*1000)}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$(p).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));renderAll()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function init(){loadDB();$('feeMonth').value=monthNow();$('attDate').value=today();$('expenseMonth').value=monthNow();refreshSettings();fillBatchFilters();renderAll()}
+function refreshSettings(){ $('headName').textContent=db.settings.name;$('headAdmin').textContent=db.settings.admin;$('greetName').textContent=db.settings.admin;$('setName').value=db.settings.name;$('setAdmin').value=db.settings.admin;$('setAddress').value=db.settings.address;$('setPhone').value=db.settings.phone}
+function saveSettings(){db.settings={name:$('setName').value.trim(),admin:$('setAdmin').value.trim(),address:$('setAddress').value.trim(),phone:$('setPhone').value.trim()};saveDB();refreshSettings();alert('सेटिंग सुरक्षित हो गई।')}
+function fillBatchFilters(){let opts=db.batches.map(b=>`<option value="${esc(b.name)}">${esc(b.name)}</option>`).join('');['studentBatchFilter','feeBatchFilter','attBatch'].forEach(k=>$(k).innerHTML=(k==='studentBatchFilter'||k==='feeBatchFilter'||k==='attBatch'?'<option value="">सभी बैच</option>':'')+opts)}
+function renderAll(){fillBatchFilters();renderDashboard();renderStudents();renderBatches();renderFees();renderAttendance();renderExpenses()}
+function renderDashboard(){let m=monthNow(),active=db.students.filter(s=>s.status!=='Inactive'),col=db.payments.filter(p=>p.month===m).reduce((a,p)=>a+ +p.amount,0),exp=db.expenses.filter(e=>e.date.startsWith(m)).reduce((a,e)=>a+ +e.amount,0),att=db.attendance.filter(a=>a.date===today());$('dStudents').textContent=active.length;$('dCollected').textContent=money(col);$('dExpense').textContent=money(exp);$('dProfit').textContent=money(col-exp);$('dPresent').textContent=att.filter(a=>a.status==='P').length;$('dAbsent').textContent=att.filter(a=>a.status==='A').length;$('dBatches').textContent=db.batches.length;let due=0;active.forEach(s=>due+=studentDue(s,m).balance);$('dPending').textContent=money(due)}
+function studentPaid(s,through){return db.payments.filter(p=>p.studentId===s.id&&p.month<=through).reduce((a,p)=>a+Number(p.amount||0),0)}
+function studentDue(s,m){let adm=(s.admDate||m).slice(0,7);let count=Math.max(0,monthDiff(adm,m)+1);let expected=count*Number(s.fee||0);let paid=studentPaid(s,m);let balance=Math.max(0,expected-paid);let priorExpected=Math.max(0,count-1)*Number(s.fee||0);let priorPaid=db.payments.filter(p=>p.studentId===s.id&&p.month<m).reduce((a,p)=>a+Number(p.amount||0),0);return {prior:Math.max(0,priorExpected-priorPaid),demand:Math.max(0,expected-priorPaid),paidMonth:db.payments.filter(p=>p.studentId===s.id&&p.month===m).reduce((a,p)=>a+Number(p.amount||0),0),balance}}
+function studentForm(studentId=null){let s=db.students.find(x=>x.id===studentId)||{};openForm('छात्र विवरण',[
+['name','छात्र का नाम','text',s.name||'',true],['father','पिता / अभिभावक','text',s.father||'',true],['mobile','मोबाइल नंबर','tel',s.mobile||'',true],['batch','बैच','select',s.batch||'',true],['fee','मासिक फीस (₹)','number',s.fee??200,true],['admDate','नामांकन तारीख','date',s.admDate||today(),true],['status','स्थिति','select2',s.status||'Active',true]
+],v=>{if(!/^\d{10}$/.test(v.mobile)){alert('मोबाइल नंबर 10 अंकों का होना चाहिए।');return false}let obj={...s,...v,id:studentId||id(),fee:+v.fee};if(!studentId)db.students.push(obj);else db.students=db.students.map(x=>x.id===studentId?obj:x);saveDB();renderAll();return true})}
+function openForm(title,fields,callback){$('modalTitle').textContent=title;let body='<div class="formgrid">';fields.forEach(([k,label,type,value,req])=>{let input='';if(type==='select')input=`<select id="f_${k}">${db.batches.map(b=>`<option ${b.name===value?'selected':''}>${esc(b.name)}</option>`).join('')}</select>`;else if(type==='select2')input=`<select id="f_${k}"><option value="Active" ${value==='Active'?'selected':''}>सक्रिय</option><option value="Inactive" ${value==='Inactive'?'selected':''}>निष्क्रिय</option></select>`;else input=`<input id="f_${k}" type="${type}" value="${esc(value)}" ${req?'required':''} ${type==='tel'?'maxlength="10"':''}>`;body+=`<div class="field"><label>${label}</label>${input}</div>`});body+='</div>';$('modalBody').innerHTML=body;$('modalSave').onclick=()=>{let v={};fields.forEach(([k])=>v[k]=$('f_'+k).value.trim());if(fields.some(([k,,,])=>!v[k])){alert('कृपया सभी आवश्यक जानकारी भरें।');return}if(callback(v)!==false)closeModal()};$('modal').classList.add('show')}
+function closeModal(){$('modal').classList.remove('show')}
+function renderStudents(){let q=$('studentSearch').value.toLowerCase(),b=$('studentBatchFilter').value;let list=db.students.filter(s=>(!q||[s.name,s.father,s.mobile].some(x=>String(x||'').toLowerCase().includes(q)))&&(!b||s.batch===b));$('studentRows').innerHTML=list.map(s=>`<tr><td><b>${esc(s.name)}</b></td><td>${esc(s.father)}</td><td>${esc(s.batch)}</td><td>${esc(s.mobile)}</td><td>${money(s.fee)}</td><td><span class="badge ${s.status==='Inactive'?'':'ok'}">${s.status==='Inactive'?'निष्क्रिय':'सक्रिय'}</span></td><td><button class="btn small" onclick="studentForm(${s.id})">Edit</button> <button class="btn red small" onclick="deleteStudent(${s.id})">हटाएँ</button></td></tr>`).join('')||'<tr><td colspan="7">कोई छात्र नहीं मिला।</td></tr>'}
+function deleteStudent(i){if(confirm('छात्र हटाएँ? इससे उसके भुगतान रिकॉर्ड नहीं हटेंगे।')){db.students=db.students.filter(s=>s.id!==i);saveDB();renderAll()}}
+function batchForm(){openForm('नया बैच', [['name','बैच का नाम','text','',true],['fee','डिफॉल्ट फीस (₹)','number','200',true]],v=>{if(db.batches.some(b=>b.name.toLowerCase()===v.name.toLowerCase())){alert('यह बैच पहले से मौजूद है।');return false}db.batches.push({name:v.name,fee:+v.fee});saveDB();renderAll();return true})}
+function renderBatches(){$('batchRows').innerHTML=db.batches.map((b,i)=>`<tr><td>${esc(b.name)}</td><td>${money(b.fee)}</td><td>${db.students.filter(s=>s.batch===b.name&&s.status!=='Inactive').length}</td><td><button class="btn red small" onclick="deleteBatch(${i})">हटाएँ</button></td></tr>`).join('')||'<tr><td colspan="4">बैच नहीं हैं।</td></tr>'}
+function deleteBatch(i){let name=db.batches[i].name;if(db.students.some(s=>s.batch===name)){alert('इस बैच में छात्र हैं। पहले छात्रों का बैच बदलें।');return}if(confirm('बैच हटाएँ?')){db.batches.splice(i,1);saveDB();renderAll()}}
+function paymentForm(preStudent=null,preMonth=null){if(!db.students.length){alert('पहले छात्र जोड़ें।');return}let active=db.students.filter(s=>s.status!=='Inactive');let opts=active.map(s=>`<option value="${s.id}" ${s.id===preStudent?'selected':''}>${esc(s.name)} — ${esc(s.batch)}</option>`).join('');$('modalTitle').textContent='फीस भुगतान दर्ज करें';$('modalBody').innerHTML=`<div class="formgrid"><div class="field full"><label>छात्र</label><select id="pStudent">${opts}</select></div><div class="field"><label>फीस महीना</label><input type="month" id="pMonth" value="${preMonth||monthNow()}"></div><div class="field"><label>प्राप्त राशि (₹)</label><input type="number" id="pAmount" min="1" value="0"></div><div class="field"><label>भुगतान तारीख</label><input type="date" id="pDate" value="${today()}"></div><div class="field"><label>भुगतान का तरीका</label><select id="pMode"><option>Cash</option><option>UPI</option><option>Bank</option></select></div><div class="field full notice" id="pDueInfo">देय राशि लोड हो रही है…</div></div>`;function calc(){let s=db.students.find(x=>x.id===+$('pStudent').value),d=s&&studentDue(s,$('pMonth').value);$('pDueInfo').textContent=d?`मासिक फीस: ${money(s.fee)} | पुराना बकाया: ${money(d.prior)} | कुल डिमांड: ${money(d.demand)} | पहले इस माह जमा: ${money(d.paidMonth)}`:'';$('pAmount').value=d?Math.max(0,d.balance):0}$('pStudent').onchange=calc;$('pMonth').onchange=calc;calc();$('modalSave').onclick=()=>{let studentId=+$('pStudent').value,month=$('pMonth').value,amount=+$('pAmount').value;if(!month||amount<=0){alert('महीना और जमा राशि सही भरें।');return}let p={id:id(),studentId,month,amount,date:$('pDate').value,mode:$('pMode').value,receipt:'GBVN-'+Date.now().toString().slice(-8)};db.payments.push(p);saveDB();closeModal();renderAll();showBill(p.id)};$('modal').classList.add('show')}
+function renderFees(){let m=$('feeMonth').value||monthNow(),batch=$('feeBatchFilter').value,q=$('feeSearch').value.toLowerCase(),rows='',demand=0,paid=0,due=0,count=0;db.students.filter(s=>s.status!=='Inactive'&&(!batch||s.batch===batch)&&(!q||s.name.toLowerCase().includes(q))).forEach(s=>{let x=studentDue(s,m);demand+=x.demand;paid+=x.paidMonth;due+=x.balance;if(x.paidMonth>0)count++;let status=x.balance===0?'Paid':x.paidMonth>0?'Partial':'Pending';rows+=`<tr><td><b>${esc(s.name)}</b></td><td>${esc(s.batch)}</td><td>${money(s.fee)}</td><td>${money(x.prior)}</td><td>${money(x.demand)}</td><td>${money(x.paidMonth)}</td><td>${money(x.balance)}</td><td><span class="badge ${status==='Paid'?'ok':status==='Partial'?'warn':''}">${status}</span></td><td><button class="btn small" onclick="paymentForm(${s.id},'${m}')">जमा</button> <button class="btn light small" onclick="demandBill(${s.id},'${m}')">डिमांड</button></td></tr>`});$('feeRows').innerHTML=rows||'<tr><td colspan="9">कोई छात्र नहीं।</td></tr>';$('fDemand').textContent=money(demand);$('fPaid').textContent=money(paid);$('fDue').textContent=money(due);$('fCount').textContent=count}
+function billHTML(data){let s=data.student;return `<h2>${esc(db.settings.name)}</h2><div class="center">${esc(db.settings.address)}<br>मोबाइल: ${esc(db.settings.phone||'—')}<br><b>${data.type==='DEMAND'?'फीस डिमांड बिल':'फीस भुगतान रसीद'}</b></div><hr><p>बिल/रसीद संख्या: <b>${esc(data.receipt)}</b> &nbsp; तारीख: ${esc(data.date)}</p><p>छात्र: <b>${esc(s.name)}</b> &nbsp; पिता: ${esc(s.father)}<br>बैच: ${esc(s.batch)} &nbsp; फीस महीना: ${data.month}</p><table class="billtable"><tr><th>विवरण</th><th>राशि</th></tr><tr><td>चालू माह फीस</td><td>${money(s.fee)}</td></tr><tr><td>पुराना बकाया</td><td>${money(data.prior)}</td></tr><tr><th>कुल डिमांड</th><th>${money(data.demand)}</th></tr><tr><td>प्राप्त राशि</td><td>${money(data.paid)}</td></tr><tr><th>शेष बकाया</th><th>${money(data.balance)}</th></tr></table><p style="margin-top:35px;text-align:right">अधिकृत हस्ताक्षरकर्ता<br><b>${esc(db.settings.admin)}</b></p>`}
+function showBill(pid){let p=db.payments.find(x=>x.id===pid);if(!p)return;let s=db.students.find(x=>x.id===p.studentId);if(!s)return;let d=studentDue(s,p.month);let paid=db.payments.filter(x=>x.studentId===s.id&&x.month===p.month).reduce((a,x)=>a+x.amount,0);let prior=d.prior;currentBill={type:'RECEIPT',student:s,month:p.month,receipt:p.receipt,date:p.date,prior,demand:d.demand,paid:p.amount,balance:d.balance};$('billArea').innerHTML=billHTML(currentBill);$('billModal').classList.add('show')}
+function demandBill(sid,m){let s=db.students.find(x=>x.id===sid),d=studentDue(s,m);currentBill={type:'DEMAND',student:s,month:m,receipt:'DEMAND-'+m,date:today(),prior:d.prior,demand:d.demand,paid:d.paidMonth,balance:d.balance};$('billArea').innerHTML=billHTML(currentBill);$('billModal').classList.add('show')}
+function closeBill(){$('billModal').classList.remove('show')}
+function shareBill(){if(!currentBill)return;let b=currentBill,s=b.student;let msg=`*${db.settings.name}*\\n${b.type==='DEMAND'?'फीस डिमांड':'फीस भुगतान रसीद'}\\nछात्र: ${s.name}\\nअभिभावक: ${s.father}\\nबैच: ${s.batch}\\nमहीना: ${b.month}\\nकुल डिमांड: ${money(b.demand)}\\nप्राप्त राशि: ${money(b.paid)}\\nशेष बकाया: ${money(b.balance)}\\nरसीद: ${b.receipt}\\nधन्यवाद!`;let phone=(s.mobile||'').replace(/\\D/g,'');window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(msg),'_blank')}
+function renderAttendance(){let date=$('attDate').value||today(),batch=$('attBatch').value;let list=db.students.filter(s=>s.status!=='Inactive'&&(!batch||s.batch===batch));$('attendanceRows').innerHTML=list.map(s=>{let a=db.attendance.find(x=>x.studentId===s.id&&x.date===date);return `<div class="row" style="border-bottom:1px solid #eee;padding:5px 0"><div><b>${esc(s.name)}</b><div class="muted">${esc(s.batch)}</div></div><button class="btn small ${a?.status==='P'?'green':'light'}" onclick="setAtt(${s.id},'P')">Present</button><button class="btn small ${a?.status==='A'?'red':'light'}" onclick="setAtt(${s.id},'A')">Absent</button></div>`}).join('')||'<p class="muted">इस बैच में छात्र नहीं हैं।</p>'}
+function setAtt(sid,status){let date=$('attDate').value||today(),old=db.attendance.find(x=>x.studentId===sid&&x.date===date);if(old)old.status=status;else db.attendance.push({studentId:sid,date,status});saveDB();renderAttendance();renderDashboard()}
+function markAll(status){let date=$('attDate').value||today(),batch=$('attBatch').value;db.students.filter(s=>s.status!=='Inactive'&&(!batch||s.batch===batch)).forEach(s=>{let a=db.attendance.find(x=>x.studentId===s.id&&x.date===date);if(a)a.status=status;else db.attendance.push({studentId:s.id,date,status})});saveDB();renderAll()}
+function expenseForm(){openForm('खर्च दर्ज करें',[['title','खर्च का विवरण','text','',true],['category','श्रेणी','text','अन्य',true],['amount','राशि (₹)','number','',true],['date','तारीख','date',today(),true]],v=>{db.expenses.push({...v,id:id(),amount:+v.amount});saveDB();renderAll();return true})}
+function renderExpenses(){let m=$('expenseMonth').value||monthNow(),list=db.expenses.filter(e=>e.date.startsWith(m)).sort((a,b)=>b.date.localeCompare(a.date));$('expenseRows').innerHTML=list.map(e=>`<tr><td>${e.date}</td><td>${esc(e.title)}</td><td>${esc(e.category)}</td><td>${money(e.amount)}</td><td><button class="btn red small" onclick="deleteExpense(${e.id})">हटाएँ</button></td></tr>`).join('')||'<tr><td colspan="5">इस महीने कोई खर्च नहीं।</td></tr>'}
+function deleteExpense(i){if(confirm('खर्च हटाएँ?')){db.expenses=db.expenses.filter(x=>x.id!==i);saveDB();renderAll()}}
+function report(title,html){$('reportTitle').textContent=title;$('reportContent').innerHTML=html;$('reportPanel').classList.remove('hidden')}
+function pendingReport(){let m=monthNow(),html='<table><tr><th>छात्र</th><th>बैच</th><th>मोबाइल</th><th>कुल बकाया</th></tr>';let total=0;db.students.filter(s=>s.status!=='Inactive').forEach(s=>{let d=studentDue(s,m).balance;if(d>0){total+=d;html+=`<tr><td>${esc(s.name)}</td><td>${esc(s.batch)}</td><td>${esc(s.mobile)}</td><td>${money(d)}</td></tr>`}});html+=`<tr><th colspan="3">कुल बकाया</th><th>${money(total)}</th></tr></table>`;report('कुल बकाया फीस रिपोर्ट',html)}
+function collectionReport(){let m=monthNow(),list=db.payments.filter(p=>p.month===m),total=0,html='<table><tr><th>रसीद</th><th>तारीख</th><th>छात्र</th><th>माध्यम</th><th>राशि</th></tr>';list.forEach(p=>{total+=p.amount;let s=db.students.find(x=>x.id===p.studentId);html+=`<tr><td>${p.receipt}</td><td>${p.date}</td><td>${esc(s?.name||'हटाया गया छात्र')}</td><td>${esc(p.mode)}</td><td>${money(p.amount)}</td></tr>`});html+=`<tr><th colspan="4">कुल कलेक्शन</th><th>${money(total)}</th></tr></table>`;report('मासिक कलेक्शन रिपोर्ट',html)}
+function profitReport(){let m=monthNow(),income=db.payments.filter(p=>p.month===m).reduce((a,p)=>a+p.amount,0),expense=db.expenses.filter(e=>e.date.startsWith(m)).reduce((a,e)=>a+e.amount,0);report('मासिक आय-व्यय रिपोर्ट',`<div class="cards"><div class="card"><small>कुल प्राप्त फीस</small><strong>${money(income)}</strong></div><div class="card"><small>कुल खर्च</small><strong>${money(expense)}</strong></div><div class="card"><small>शुद्ध आय</small><strong>${money(income-expense)}</strong></div></div>`)}
+function backup(){let blob=new Blob([JSON.stringify({...db,backupDate:new Date().toISOString()},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='GBVN_BACKUP_'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
+function restore(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!d.students||!d.batches||!d.payments)throw Error();if(confirm('मौजूदा डेटा बदलकर बैकअप रीस्टोर करें?')){db={...db,...d,settings:{...db.settings,...d.settings}};saveDB();init();alert('बैकअप सफलतापूर्वक रीस्टोर हुआ।')}}catch(err){alert('यह सही GBVN JSON बैकअप फाइल नहीं है।')}e.target.value=''};r.readAsText(f)}
+function clearAll(){if(confirm('क्या आप सचमुच पूरा डेटा हटाना चाहते हैं? पहले बैकअप डाउनलोड कर लें।')&&confirm('अंतिम पुष्टि: सभी छात्र, फीस, उपस्थिति और खर्च हट जाएँगे।')){localStorage.removeItem(KEY);location.reload()}}
+init();
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.error));
+}
+</script>
+</body>
+</html>
